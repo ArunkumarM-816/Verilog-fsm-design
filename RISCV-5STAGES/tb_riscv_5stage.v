@@ -4,10 +4,12 @@ module tb_riscv_5stage;
 
     reg clk;
     reg reset;
+    wire [31:0] probe_pc; // Added to match the updated module ports
 
     riscv_5stage dut (
         .clk(clk),
-        .reset(reset)
+        .reset(reset),
+        .probe_pc(probe_pc)
     );
 
     // 100 MHz Clock Generation
@@ -45,16 +47,6 @@ module tb_riscv_5stage;
         end
 
         // Test Program Memory Initialization:
-        // 0: ADDI x1, x0, 5     (x1 = 5)
-        // 1: ADDI x2, x0, 7     (x2 = 7)
-        // 2: ADD  x3, x1, x2    (x3 = 12 - Tests Forwarding Unit)
-        // 3: SUB  x4, x3, x1    (x4 = 7  - Tests Forwarding Unit)
-        // 4: SW   x3, 0(x0)     (MEM[0] = 12)
-        // 5: LW   x5, 0(x0)     (x5 = 12)
-        // 6: BEQ  x4, x2, +8    (Branch Taken since 7 == 7 - Tests Pipeline Flush)
-        // 7: ADDI x6, x0, 99    (Should be skipped, x6 remains 0)
-        // 8: ADDI x7, x0, 11    (x7 = 11)
-        
         dut.instruction_mem[0] = enc_i(5,  0, 0, 1, 7'b0010011);
         dut.instruction_mem[1] = enc_i(7,  0, 0, 2, 7'b0010011);
         dut.instruction_mem[2] = enc_r(0,  2, 1, 0, 3, 7'b0110011);

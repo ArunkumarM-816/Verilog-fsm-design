@@ -1,12 +1,18 @@
 `timescale 1ns/1ps
 
+(* dont_touch = "true" *) // Forces Vivado to synthesize the full CPU and prevents "empty design" errors
 module riscv_5stage (
     input wire clk,
-    input wire reset
+    input wire reset,
+    output wire [31:0] probe_pc // Dummy output to prevent logic deletion
 );
 
     // Memory & Registers
     reg [31:0] pc;
+    
+    // Wire the internal PC to the output port
+    assign probe_pc = pc;
+
     reg [31:0] instruction_mem [0:63];
     reg [31:0] data_mem        [0:63];
     reg [31:0] registers       [0:31];
